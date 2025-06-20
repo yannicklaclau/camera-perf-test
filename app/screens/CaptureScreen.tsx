@@ -238,7 +238,11 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
           <View style={styles.cameraContainer}>
             <Text style={styles.nativeCameraText}>
               Native Camera{'\n'}
-              (Will launch system camera on capture)
+              (System camera launches on capture){'\n'}
+              {'\n'}
+              <Text style={styles.timingNote}>
+                ⏱️ Timing includes launch + capture
+              </Text>
             </Text>
           </View>
         );
@@ -363,5 +367,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6c757d',
     textAlign: 'center',
+  },
+  timingNote: {
+    fontSize: 14,
+    color: '#adb5bd',
+    fontStyle: 'italic',
   },
 }); 
