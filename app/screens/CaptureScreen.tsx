@@ -8,8 +8,8 @@ import {
   Platform,
   Linking,
 } from 'react-native';
-import { Camera as ExpoCamera } from 'expo-camera';
-import { Camera as VisionCamera, useCameraDevices } from 'react-native-vision-camera';
+import { CameraView as ExpoCamera, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
+import { Camera as VisionCamera, useCameraDevice } from 'react-native-vision-camera';
 import * as ImagePicker from 'expo-image-picker';
 
 import CameraToggle from '../components/CameraToggle';
@@ -28,8 +28,7 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
 
   const expoCameraRef = useRef<ExpoCamera>(null);
   const visionCameraRef = useRef<VisionCamera>(null);
-  const devices = useCameraDevices();
-  const device = devices.back;
+  const device = useCameraDevice('back');
 
   const {
     isCapturing,
@@ -60,16 +59,30 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
     }
   }, [currentEngine, hasPermissions, startColdStartTimer, stopColdStartTimer]);
 
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
+
   const requestPermissions = async () => {
     try {
-      const { status: cameraStatus } = await ExpoCamera.requestCameraPermissionsAsync();
-      const { status: audioStatus } = await ExpoCamera.requestMicrophonePermissionsAsync();
+      if (!cameraPermission?.granted) {
+        await requestCameraPermission();
+      }
+      if (!microphonePermission?.granted) {
+        await requestMicrophonePermission();
+      }
       
       if (Platform.OS === 'ios') {
         const { status: mediaLibraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        setHasPermissions(cameraStatus === 'granted' && audioStatus === 'granted' && mediaLibraryStatus === 'granted');
+        setHasPermissions(
+          cameraPermission?.granted === true && 
+          microphonePermission?.granted === true && 
+          mediaLibraryStatus === 'granted'
+        );
       } else {
-        setHasPermissions(cameraStatus === 'granted' && audioStatus === 'granted');
+        setHasPermissions(
+          cameraPermission?.granted === true && 
+          microphonePermission?.granted === true
+        );
       }
     } catch (error) {
       console.error('Permission request failed:', error);
@@ -100,9 +113,11 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
       const shutterLagTime = stopShutterTimer();
 
       if (photoUri && shutterLagTime) {
-        await recordBenchmarkResult(currentEngine, photoUri, {
+        const result = await recordBenchmarkResult(currentEngine, photoUri, {
           shutterLagTime,
         });
+        
+        console.log('Benchmark result recorded:', result);
         
         Alert.alert(
           'Capture Complete',
@@ -112,6 +127,8 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
             { text: 'View Results', onPress: onNavigateToResults },
           ]
         );
+      } else {
+        console.log('Missing data:', { photoUri, shutterLagTime });
       }
     } catch (error) {
       stopShutterTimer();
@@ -157,7 +174,6 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
 
     try {
       const photo = await visionCameraRef.current.takePhoto({
-        qualityPrioritization: 'quality',
         flash: 'off',
       });
       return `file://${photo.path}`;
@@ -200,8 +216,7 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
           <ExpoCamera
             ref={expoCameraRef}
             style={styles.camera}
-            type={ExpoCamera.Constants.Type.back}
-            autoFocus={ExpoCamera.Constants.AutoFocus.on}
+            facing='back'
           />
         );
 
