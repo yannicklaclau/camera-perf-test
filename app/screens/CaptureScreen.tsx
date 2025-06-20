@@ -62,26 +62,50 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [microphonePermission, requestMicrophonePermission] = useMicrophonePermissions();
 
-  const requestPermissions = async () => {
-    try {
-      if (!cameraPermission?.granted) {
-        await requestCameraPermission();
-      }
-      if (!microphonePermission?.granted) {
-        await requestMicrophonePermission();
-      }
-      
+  // Watch for permission changes and update hasPermissions accordingly
+  useEffect(() => {
+    const checkPermissions = async () => {
       if (Platform.OS === 'ios') {
-        const { status: mediaLibraryStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const mediaLibraryPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
         setHasPermissions(
           cameraPermission?.granted === true && 
           microphonePermission?.granted === true && 
-          mediaLibraryStatus === 'granted'
+          mediaLibraryPermission.status === 'granted'
         );
       } else {
         setHasPermissions(
           cameraPermission?.granted === true && 
           microphonePermission?.granted === true
+        );
+      }
+    };
+    
+    checkPermissions();
+  }, [cameraPermission?.granted, microphonePermission?.granted]);
+
+  const requestPermissions = async () => {
+    try {
+      let cameraResult = cameraPermission;
+      let microphoneResult = microphonePermission;
+      
+      if (!cameraPermission?.granted) {
+        cameraResult = await requestCameraPermission();
+      }
+      if (!microphonePermission?.granted) {
+        microphoneResult = await requestMicrophonePermission();
+      }
+      
+      if (Platform.OS === 'ios') {
+        const mediaLibraryResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        setHasPermissions(
+          cameraResult?.granted === true && 
+          microphoneResult?.granted === true && 
+          mediaLibraryResult.status === 'granted'
+        );
+      } else {
+        setHasPermissions(
+          cameraResult?.granted === true && 
+          microphoneResult?.granted === true
         );
       }
     } catch (error) {
