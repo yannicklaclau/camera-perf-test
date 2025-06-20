@@ -129,6 +129,10 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
   const handleCapture = async () => {
     if (!isInitialized || isCapturing) return;
 
+    // 📊 SHUTTER LAG TIMING:
+    // ⏱️  START: When capture button is pressed
+    // ⏱️  END: When photo file is saved and ready
+    // 🎯 GOAL: Time from user action to camera ready for next shot
     startShutterTimer();
 
     try {
@@ -153,16 +157,8 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
           shutterLagTime,
         });
         
+        console.log(`📸 ${currentEngine} photo captured in ${shutterLagTime.toFixed(0)}ms`);
         console.log('Benchmark result recorded:', result);
-        
-        Alert.alert(
-          'Capture Complete',
-          `Photo captured in ${shutterLagTime.toFixed(0)}ms`,
-          [
-            { text: 'Continue', style: 'default' },
-            { text: 'View Results', onPress: onNavigateToResults },
-          ]
-        );
       } else {
         console.log('Missing data:', { photoUri, shutterLagTime });
       }
@@ -178,7 +174,7 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
-        allowsEditing: false,
+        allowsEditing: false, // Skip preview/edit screen
       });
 
       if (!result.canceled && result.assets[0]) {
