@@ -1,0 +1,64 @@
+{
+  "expo": {
+    "name": "Camera Perf Test",
+    "slug": "camera-perf-test",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera for taking photos and measuring camera performance.",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone for camera functionality."
+        }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera for taking photos and measuring camera performance.",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone for camera functionality."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app needs access to your photo library for saving captured images.",
+          "cameraPermission": "The app needs access to camera for capturing images."
+        }
+      ]
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera for taking photos and measuring camera performance.",
+        "NSMicrophoneUsageDescription": "$(PRODUCT_NAME) needs access to your Microphone for camera functionality.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to photo library for saving captured images."
+      },
+      "bundleIdentifier": "com.yanlac.camera-perf-test"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
