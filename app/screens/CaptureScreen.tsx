@@ -65,18 +65,30 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
   // Watch for permission changes and update hasPermissions accordingly
   useEffect(() => {
     const checkPermissions = async () => {
+      console.log('🔍 Checking permissions:', {
+        camera: cameraPermission?.granted,
+        microphone: microphonePermission?.granted,
+        platform: Platform.OS
+      });
+      
       if (Platform.OS === 'ios') {
         const mediaLibraryPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
-        setHasPermissions(
+        console.log('📱 Media library permission:', mediaLibraryPermission.status);
+        
+        const allPermissionsGranted = 
           cameraPermission?.granted === true && 
           microphonePermission?.granted === true && 
-          mediaLibraryPermission.status === 'granted'
-        );
+          mediaLibraryPermission.status === 'granted';
+          
+        console.log('✅ All permissions granted:', allPermissionsGranted);
+        setHasPermissions(allPermissionsGranted);
       } else {
-        setHasPermissions(
+        const allPermissionsGranted = 
           cameraPermission?.granted === true && 
-          microphonePermission?.granted === true
-        );
+          microphonePermission?.granted === true;
+          
+        console.log('✅ All permissions granted (Android):', allPermissionsGranted);
+        setHasPermissions(allPermissionsGranted);
       }
     };
     
