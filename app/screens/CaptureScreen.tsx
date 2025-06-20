@@ -15,7 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import CameraToggle from '../components/CameraToggle';
 import ShutterButton from '../components/ShutterButton';
 import { Engine } from '../types/metrics';
-import { useCameraMetrics } from '../hooks/useCameraMetrics';
+import { useBenchmarkContext } from '../hooks/BenchmarkContext';
 
 interface CaptureScreenProps {
   onNavigateToResults: () => void;
@@ -38,7 +38,7 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
     startShutterTimer,
     stopShutterTimer,
     recordBenchmarkResult,
-  } = useCameraMetrics();
+  } = useBenchmarkContext();
 
   useEffect(() => {
     requestPermissions();

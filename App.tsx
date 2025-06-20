@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 import CaptureScreen from './app/screens/CaptureScreen';
 import ResultsScreen from './app/screens/ResultsScreen';
+import { BenchmarkProvider } from './app/hooks/BenchmarkContext';
 
 type Screen = 'capture' | 'results';
 
@@ -25,47 +26,49 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      
-      {/* Navigation Bar */}
-      <View style={styles.navigationBar}>
-        <TouchableOpacity
-          style={[
-            styles.navButton,
-            currentScreen === 'capture' && styles.activeNavButton,
-          ]}
-          onPress={navigateToCapture}
-        >
-          <Text style={[
-            styles.navButtonText,
-            currentScreen === 'capture' && styles.activeNavButtonText,
-          ]}>
-            Capture
-          </Text>
-        </TouchableOpacity>
+    <BenchmarkProvider>
+      <View style={styles.container}>
+        <StatusBar style="auto" />
         
-        <TouchableOpacity
-          style={[
-            styles.navButton,
-            currentScreen === 'results' && styles.activeNavButton,
-          ]}
-          onPress={navigateToResults}
-        >
-          <Text style={[
-            styles.navButtonText,
-            currentScreen === 'results' && styles.activeNavButtonText,
-          ]}>
-            Results
-          </Text>
-        </TouchableOpacity>
-      </View>
+        {/* Navigation Bar */}
+        <View style={styles.navigationBar}>
+          <TouchableOpacity
+            style={[
+              styles.navButton,
+              currentScreen === 'capture' && styles.activeNavButton,
+            ]}
+            onPress={navigateToCapture}
+          >
+            <Text style={[
+              styles.navButtonText,
+              currentScreen === 'capture' && styles.activeNavButtonText,
+            ]}>
+              Capture
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[
+              styles.navButton,
+              currentScreen === 'results' && styles.activeNavButton,
+            ]}
+            onPress={navigateToResults}
+          >
+            <Text style={[
+              styles.navButtonText,
+              currentScreen === 'results' && styles.activeNavButtonText,
+            ]}>
+              Results
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      {/* Main Content */}
-      <View style={styles.content}>
-        {renderScreen()}
+        {/* Main Content */}
+        <View style={styles.content}>
+          {renderScreen()}
+        </View>
       </View>
-    </View>
+    </BenchmarkProvider>
   );
 }
 

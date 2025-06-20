@@ -11,7 +11,7 @@ import {
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 
-import { useCameraMetrics } from '../hooks/useCameraMetrics';
+import { useBenchmarkContext } from '../hooks/BenchmarkContext';
 import { Engine, BenchmarkResult } from '../types/metrics';
 import { formatFileSize, exportResultsToCSV } from '../utils/fileStats';
 
@@ -20,7 +20,7 @@ interface ResultsScreenProps {
 }
 
 export default function ResultsScreen({ onNavigateToCapture }: ResultsScreenProps) {
-  const { results, resetBenchmarks, getAverageMetrics } = useCameraMetrics();
+  const { results, resetBenchmarks, getAverageMetrics } = useBenchmarkContext();
 
   const handleExportCSV = async () => {
     try {
