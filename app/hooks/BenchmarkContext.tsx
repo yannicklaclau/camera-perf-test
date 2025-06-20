@@ -1,17 +1,23 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useCameraMetrics } from './useCameraMetrics';
+import { Engine, BenchmarkResult, TimingMetrics } from '../types/metrics';
 
 interface BenchmarkContextType {
   isCapturing: boolean;
-  results: any[];
+  results: BenchmarkResult[];
   currentTestNumber: number;
   startColdStartTimer: () => void;
   stopColdStartTimer: () => number | undefined;
   startShutterTimer: () => void;
   stopShutterTimer: () => number | undefined;
-  recordBenchmarkResult: (engine: any, photoUri?: string, timingOverrides?: any) => Promise<any>;
+  recordBenchmarkResult: (engine: Engine, photoUri?: string, timingOverrides?: Partial<TimingMetrics>) => Promise<BenchmarkResult>;
   resetBenchmarks: () => void;
-  getAverageMetrics: (engine?: any) => any;
+  getAverageMetrics: (engine?: Engine) => {
+    avgColdStart: number;
+    avgShutterLag: number;
+    avgFileSize: number;
+    count: number;
+  };
 }
 
 const BenchmarkContext = createContext<BenchmarkContextType | null>(null);
