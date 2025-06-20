@@ -175,6 +175,10 @@ export default function CaptureScreen({ onNavigateToResults }: CaptureScreenProp
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
         allowsEditing: false, // Skip preview/edit screen
+        cameraType: ImagePicker.CameraType.back,
+        aspect: [4, 3],
+        exif: false, // Skip EXIF processing for speed
+        base64: false, // Skip base64 encoding for speed
       });
 
       if (!result.canceled && result.assets[0]) {

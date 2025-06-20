@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 import { useBenchmarkContext } from '../hooks/BenchmarkContext';
 import { Engine, BenchmarkResult } from '../types/metrics';
@@ -21,6 +22,28 @@ interface ResultsScreenProps {
 
 export default function ResultsScreen({ onNavigateToCapture }: ResultsScreenProps) {
   const { results, resetBenchmarks, getAverageMetrics } = useBenchmarkContext();
+
+  const handleCopyCSV = async () => {
+    try {
+      const csvContent = exportResultsToCSV(results);
+      Clipboard.setString(csvContent);
+      Alert.alert('Copied!', 'CSV data copied to clipboard');
+    } catch (error) {
+      console.error('Copy failed:', error);
+      Alert.alert('Copy Failed', 'Could not copy CSV to clipboard');
+    }
+  };
+
+  const handleCopyJSON = async () => {
+    try {
+      const jsonContent = JSON.stringify(results, null, 2);
+      Clipboard.setString(jsonContent);
+      Alert.alert('Copied!', 'JSON data copied to clipboard');
+    } catch (error) {
+      console.error('Copy failed:', error);
+      Alert.alert('Copy Failed', 'Could not copy JSON to clipboard');
+    }
+  };
 
   const handleExportCSV = async () => {
     try {
@@ -189,12 +212,16 @@ export default function ResultsScreen({ onNavigateToCapture }: ResultsScreenProp
           <Text style={styles.secondaryButtonText}>Reset</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.button} onPress={handleExportCSV}>
-          <Text style={styles.buttonText}>Export CSV</Text>
+        <TouchableOpacity style={styles.copyButton} onPress={handleCopyCSV}>
+          <Text style={styles.copyButtonText}>📋 CSV</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.button} onPress={handleExportJSON}>
-          <Text style={styles.buttonText}>Export JSON</Text>
+        <TouchableOpacity style={styles.copyButton} onPress={handleCopyJSON}>
+          <Text style={styles.copyButtonText}>📋 JSON</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.button} onPress={handleExportCSV}>
+          <Text style={styles.buttonText}>💾 Save</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -332,6 +359,19 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     color: '#ffffff',
     fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  copyButton: {
+    backgroundColor: '#28a745',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    minWidth: 70,
+  },
+  copyButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
   },
